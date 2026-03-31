@@ -1,0 +1,43 @@
+<div class="login-container">
+  <div class="login-card">
+    <div class="card-body">
+      <div class="text-center mb-5">
+        <div class="login-icon mb-3">
+          <i class="bi bi-hospital"></i>
+        </div>
+        <h2 class="fw-bold text-dark h3">Welcome Back</h2>
+        <p class="text-muted small">Sign in to SSM Medical Gateway</p>
+      </div>
+
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+        <div class="form-floating mb-3">
+          <input type="email" class="form-control" id="email" formControlName="email" placeholder="name@example.com"
+            [class.is-invalid]="loginForm.get('email')?.touched && loginForm.get('email')?.invalid">
+          <label for="email"><i class="bi bi-envelope me-2"></i>Email Address</label>
+          <div class="invalid-feedback">Valid email is required</div>
+        </div>
+
+        <div class="form-floating mb-4">
+          <input type="password" class="form-control" id="password" formControlName="password" placeholder="Password"
+            [class.is-invalid]="loginForm.get('password')?.touched && loginForm.get('password')?.invalid">
+          <label for="password"><i class="bi bi-lock me-2"></i>Password</label>
+          <div class="invalid-feedback">Password must be at least 6 characters</div>
+        </div>
+
+        <div *ngIf="errorMessage" class="alert alert-danger py-2 small d-flex align-items-center mb-4" role="alert">
+          <i class="bi bi-exclamation-circle me-2"></i>
+          <div>{{ errorMessage }}</div>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100 shadow-sm mb-4" [disabled]="loginForm.invalid">
+          Sign In <i class="bi bi-arrow-right ms-2"></i>
+        </button>
+
+        <div class="text-center">
+          <span class="text-muted small">New to SSM? </span>
+          <a routerLink="/register" class="text-primary fw-bold text-decoration-none small">Create Account</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

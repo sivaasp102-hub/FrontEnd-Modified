@@ -1,0 +1,138 @@
+<div class="register-container">
+  <div class="register-card">
+    <div class="card-body">
+      <div class="text-center mb-5">
+        <div class="login-icon mb-3">
+          <i class="bi bi-person-plus"></i>
+        </div>
+        <h2 class="fw-bold text-dark h3">Create Account</h2>
+        <p class="text-muted small">Join SSM Medical Network</p>
+      </div>
+
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+        <div class="row g-3">
+          <div class="col-12">
+            <div class="form-floating">
+              <input type="text" class="form-control" id="name" formControlName="name" placeholder="Full Name"
+                [class.is-invalid]="registerForm.get('name')?.touched && registerForm.get('name')?.invalid">
+              <label for="name">Full Name</label>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="form-floating">
+              <input type="email" class="form-control" id="email" formControlName="email" placeholder="name@example.com"
+                [class.is-invalid]="registerForm.get('email')?.touched && registerForm.get('email')?.invalid">
+              <label for="email">Email Address</label>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="form-floating">
+              <input type="password" class="form-control" id="password" formControlName="password" placeholder="Password"
+                [class.is-invalid]="registerForm.get('password')?.touched && registerForm.get('password')?.invalid">
+              <label for="password">Password</label>
+            </div>
+          </div>
+
+          <div class="col-12 mt-4">
+            <label class="form-label fw-bold text-muted small text-uppercase">Account Type</label>
+            <div class="d-flex gap-3 mb-2">
+              <div class="form-check role-check flex-fill p-0">
+                <input class="form-check-input d-none" type="radio" name="role" id="rolePatient" value="Patient"
+                  formControlName="role">
+                <label class="form-check-label w-100 text-center py-2 rounded-3" for="rolePatient">
+                  <i class="bi bi-person me-1"></i> Patient
+                </label>
+              </div>
+              <div class="form-check role-check flex-fill p-0">
+                <input class="form-check-input d-none" type="radio" name="role" id="roleDoctor" value="Doctor"
+                  formControlName="role">
+                <label class="form-check-label w-100 text-center py-2 rounded-3" for="roleDoctor">
+                  <i class="bi bi-stethoscope me-1"></i> Doctor
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Patient Specific -->
+          <ng-container *ngIf="registerForm.get('role')?.value === 'Patient'">
+            <div class="col-md-4">
+              <div class="form-floating">
+                <input type="number" class="form-control" id="age" formControlName="age" placeholder="Age">
+                <label for="age">Age</label>
+              </div>
+            </div>
+            <div class="col-md-8">
+              <div class="form-floating">
+                <input type="text" class="form-control" id="contact" formControlName="contactNumber"
+                  placeholder="Contact">
+                <label for="contact">Contact Number</label>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-floating">
+                <input type="text" class="form-control" id="allergies" formControlName="allergies"
+                  placeholder="Allergies">
+                <label for="allergies">Allergies (if any)</label>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-floating">
+                <input type="text" class="form-control" id="chronicDiseases" formControlName="chronicDiseases"
+                  placeholder="Chronic Diseases">
+                <label for="chronicDiseases">Chronic Diseases</label>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-floating">
+                <input type="text" class="form-control" id="emergencyName" formControlName="emergencyContactName"
+                  placeholder="Emergency Contact Name">
+                <label for="emergencyName">Emergency Contact Name</label>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-floating">
+                <input type="text" class="form-control" id="emergencyPhone" formControlName="emergencyContactPhone"
+                  placeholder="Emergency Contact Phone">
+                <label for="emergencyPhone">Emergency Contact Phone</label>
+              </div>
+            </div>
+            <div class="col-12">
+              <div class="form-floating">
+                <textarea class="form-control" id="problem" formControlName="problemDescription"
+                  placeholder="Description" style="height: 100px"></textarea>
+                <label for="problem">Health Concerns / Notes</label>
+              </div>
+            </div>
+          </ng-container>
+
+          <!-- Doctor Specific -->
+          <ng-container *ngIf="registerForm.get('role')?.value === 'Doctor'">
+            <div class="col-12">
+              <div class="form-floating">
+                <input type="text" class="form-control" id="specialization" formControlName="specialization"
+                  placeholder="Specialization">
+                <label for="specialization">Specialization (e.g. Cardiology)</label>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+
+        <div *ngIf="errorMessage" class="alert alert-danger py-2 small d-flex align-items-center mt-3" role="alert">
+          <i class="bi bi-exclamation-circle me-2"></i>
+          <div>{{ errorMessage }}</div>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100 shadow-sm mt-4" [disabled]="registerForm.invalid">
+          Create Account <i class="bi bi-person-check ms-2"></i>
+        </button>
+
+        <div class="text-center mt-4">
+          <span class="text-muted small">Already have an account? </span>
+          <a routerLink="/login" class="text-primary fw-bold text-decoration-none small">Sign In</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

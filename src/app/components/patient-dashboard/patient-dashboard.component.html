@@ -1,0 +1,268 @@
+<div class="patient-container bg-light min-vh-100">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm px-4">
+        <a class="navbar-brand fw-bold" href="#"><i class="bi bi-person-fill me-2"></i>MEDICO Patient</a>
+        <div class="ms-auto">
+            <button (click)="logout()" class="btn btn-outline-light rounded-pill px-4">
+                <i class="bi bi-box-arrow-right me-2"></i>Logout
+            </button>
+        </div>
+    </nav>
+
+    <div class="container py-5">
+        <div class="row g-5">
+            <!-- Profile Sidebar -->
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm text-center pt-5 pb-3 fade-in h-100">
+                    <div class="position-relative mx-auto mb-4" style="width: 120px; height: 120px;">
+                        <div
+                            class="rounded-circle bg-primary bg-opacity-10 w-100 h-100 d-flex align-items-center justify-content-center text-primary fs-1 fw-bold">
+                            {{ profile?.name?.charAt(0) }}
+                        </div>
+                        <span
+                            class="position-absolute bottom-0 end-0 p-2 bg-success border border-white rounded-circle"></span>
+                    </div>
+                    <div class="card-body">
+                        <h3 class="fw-bold text-dark">{{ profile?.name }}</h3>
+                        <p class="text-muted text-uppercase small ls-1 mb-4">Patient ID: #{{ profile?.id || '---' }}
+                        </p>
+
+                        <div class="list-group list-group-flush text-start">
+                            <div class="list-group-item px-4 py-3 border-0">
+                                <small class="text-muted d-block mb-1">Age</small>
+                                <div class="fw-bold text-dark"><i class="bi bi-cake2 me-2 text-primary"></i>{{
+                                    profile?.age }} Years</div>
+                            </div>
+                            <div class="list-group-item px-4 py-3 border-0">
+                                <small class="text-muted d-block mb-1">Contact</small>
+                                <div class="fw-bold text-dark"><i class="bi bi-telephone me-2 text-primary"></i>{{
+                                    profile?.contactNumber }}</div>
+                            </div>
+                            <div class="list-group-item px-4 py-3 border-0" *ngIf="profile?.allergies">
+                                <small class="text-muted d-block mb-1">Allergies</small>
+                                <div class="fw-bold text-danger"><i class="bi bi-exclamation-circle me-2"></i>{{
+                                    profile?.allergies }}</div>
+                            </div>
+                            <div class="list-group-item px-4 py-3 border-0" *ngIf="profile?.chronicDiseases">
+                                <small class="text-muted d-block mb-1">Chronic Diseases</small>
+                                <div class="fw-bold text-dark"><i class="bi bi-heart-pulse me-2 text-primary"></i>{{
+                                    profile?.chronicDiseases }}</div>
+                            </div>
+                            <div class="list-group-item px-4 py-3 border-0" *ngIf="profile?.emergencyContactName">
+                                <small class="text-muted d-block mb-1">Emergency Contact</small>
+                                <div class="fw-bold text-dark"><i
+                                        class="bi bi-person-exclamation me-2 text-primary"></i>
+                                    {{ profile?.emergencyContactName }} <br>
+                                    <span class="small text-muted">{{ profile?.emergencyContactPhone }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 px-4">
+                            <button (click)="openEditProfile()"
+                                class="btn btn-primary w-100 py-2 rounded-pill shadow-sm">
+                                <i class="bi bi-pencil-square me-2"></i>Edit Profile
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Appointments Section -->
+            <div class="col-lg-8">
+                <div class="d-flex justify-content-between align-items-center mb-4 fade-in">
+                    <h2 class="fw-bold text-dark m-0">My Appointments</h2>
+                    <button (click)="showBookModal = true" class="btn btn-primary rounded-pill shadow-sm">
+                        <i class="bi bi-plus-lg me-2"></i>Book New
+                    </button>
+                </div>
+
+                <!-- Appointments Grid -->
+                <div class="row g-4 fade-in">
+                    <div class="col-md-6 col-xl-12" *ngFor="let appt of appointments">
+                        <div class="card border-0 shadow-sm h-100 appointment-card transition-all hover-shadow">
+                            <div class="card-body p-4">
+                                <!-- Card Header: Date & Status -->
+                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                    <div>
+                                        <div class="text-primary fw-bold small text-uppercase ls-1">
+                                            <i class="bi bi-calendar3 me-2"></i>{{ appt.startTime | date:'EEEE, MMM d, y' }}
+                                        </div>
+                                        <div class="text-dark fs-5 fw-bold">
+                                            <i class="bi bi-clock me-2 text-muted"></i>{{ appt.startTime | date:'shortTime' }}
+                                        </div>
+                                    </div>
+                                    <span class="badge rounded-pill px-3 py-2 bg-{{ getStatusColor(appt.status) }} bg-opacity-10 text-{{ getStatusColor(appt.status) }} border border-{{ getStatusColor(appt.status) }} border-opacity-25">
+                                        {{ getStatusLabel(appt.status) }}
+                                    </span>
+                                </div>
+
+                                <hr class="opacity-10 my-3">
+
+                                <div class="row g-4">
+                                    <!-- Left side: Basic Info -->
+                                    <div class="col-xl-4 border-end-xl">
+                                        <div class="mb-3">
+                                            <label class="small text-muted fw-bold text-uppercase d-block mb-1">Consulting Doctor</label>
+                                            <div class="d-flex align-items-center">
+                                                <div class="rounded-circle bg-primary bg-opacity-10 p-2 me-3">
+                                                    <i class="bi bi-person-badge text-primary fs-5"></i>
+                                                </div>
+                                                <div class="fw-bold text-dark">Dr. {{ appt.doctorName || appt.doctor?.name || 'Assigned Soon' }}</div>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label class="small text-muted fw-bold text-uppercase d-block mb-1">Reported Problem</label>
+                                            <p class="mb-0 text-dark small">{{ appt.complaint || appt.problemDescription || 'No description provided' }}</p>
+                                        </div>
+                                    </div>
+
+                                    <!-- Right side: Diagnosis & Treatment (Show only if completed) -->
+                                    <div class="col-xl-8">
+                                        <div *ngIf="appt.status === AppointmentStatus.Completed || appt.diagnosis; else pendingConsultation">
+                                            <div class="row g-3">
+                                                <div class="col-md-6">
+                                                    <label class="small text-success fw-bold text-uppercase d-block mb-1">
+                                                        <i class="bi bi-clipboard2-pulse me-1"></i>Diagnosis
+                                                    </label>
+                                                    <p class="mb-0 text-dark fw-medium">{{ appt.diagnosis || appt.consultation?.diagnosis }}</p>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label class="small text-success fw-bold text-uppercase d-block mb-1">
+                                                        <i class="bi bi-capsule me-1"></i>Prescribed Treatment
+                                                    </label>
+                                                    <p class="mb-0 text-dark fw-medium">{{ appt.prescribedMedicines || appt.consultation?.prescribedMedicines || 'Check with pharmacy' }}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <ng-template #pendingConsultation>
+                                            <div class="h-100 d-flex align-items-center justify-content-center bg-light rounded-3 p-3">
+                                                <div class="text-center">
+                                                    <i class="bi bi-hourglass-split text-muted fs-4 d-block mb-2"></i>
+                                                    <span class="small text-muted">Awaiting doctor's consultation results...</span>
+                                                </div>
+                                            </div>
+                                        </ng-template>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- No Appointments State -->
+                    <div class="col-12 text-center py-5" *ngIf="appointments.length === 0">
+                        <div class="card border-0 shadow-sm p-5">
+                            <i class="bi bi-calendar-x text-muted display-1 mb-4"></i>
+                            <h4 class="text-dark">No appointments found</h4>
+                            <p class="text-muted">You haven't booked any appointments yet. Click "Book New" to get started.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div class="modal fade show d-block" *ngIf="showProfileModal" style="background: rgba(0,0,0,0.5)">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title fw-bold">Edit Your Profile</h5>
+                    <button type="button" class="btn-close btn-close-white"
+                        (click)="showProfileModal = false"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <form [formGroup]="profileForm" (ngSubmit)="submitProfile()">
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label small fw-bold text-muted">Full Name</label>
+                                <input type="text" class="form-control" formControlName="name">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold text-muted">Age</label>
+                                <input type="number" class="form-control" formControlName="age">
+                            </div>
+                            <div class="col-md-8">
+                                <label class="form-label small fw-bold text-muted">Contact Number</label>
+                                <input type="text" class="form-control" formControlName="contactNumber">
+                            </div>
+                            <!-- New Fields -->
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-muted">Allergies</label>
+                                <input type="text" class="form-control" formControlName="allergies">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-muted">Chronic Diseases</label>
+                                <input type="text" class="form-control" formControlName="chronicDiseases">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-muted">Emergency Contact Name</label>
+                                <input type="text" class="form-control" formControlName="emergencyContactName">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-muted">Emergency Contact Phone</label>
+                                <input type="text" class="form-control" formControlName="emergencyContactPhone">
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label small fw-bold text-muted">Health Concerns / Problem
+                                    Description</label>
+                                <textarea class="form-control" formControlName="problemDescription" rows="3"></textarea>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-end gap-2 mt-4">
+                            <button type="button" class="btn btn-light"
+                                (click)="showProfileModal = false">Cancel</button>
+                            <button type="submit" class="btn btn-primary px-4" [disabled]="profileForm.invalid">Save
+                                Changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Book Appointment Modal -->
+    <div class="modal fade show d-block" *ngIf="showBookModal" style="background: rgba(0,0,0,0.5)">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title fw-bold">Request Appointment</h5>
+                    <button type="button" class="btn-close btn-close-white" (click)="showBookModal = false"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <form [formGroup]="bookForm" (ngSubmit)="submitBooking()">
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label small fw-bold text-muted">Select Doctor</label>
+                                <select class="form-select" formControlName="doctorId">
+                                    <option [ngValue]="null">Choose a doctor...</option>
+                                    <option *ngFor="let d of doctors" [ngValue]="d.id">Dr. {{ d.name }} ({{
+                                        d.specialization }})</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-muted">Preferred Start</label>
+                                <input type="datetime-local" class="form-control" formControlName="startTime">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-muted">Preferred End</label>
+                                <input type="datetime-local" class="form-control" formControlName="endTime">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label small fw-bold text-muted">Complaint / Reason for Visit</label>
+                                <textarea class="form-control" formControlName="complaint" rows="3"
+                                    placeholder="Describe your symptoms or reason for visiting..."></textarea>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-end gap-2 mt-4">
+                            <button type="button" class="btn btn-light"
+                                (click)="showBookModal = false">Cancel</button>
+                            <button type="submit" class="btn btn-primary px-4" [disabled]="bookForm.invalid">Book
+                                Now</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

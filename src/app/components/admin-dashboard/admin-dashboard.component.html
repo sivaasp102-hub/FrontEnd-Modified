@@ -1,0 +1,395 @@
+<div class="d-flex" id="wrapper">
+    <!-- Sidebar -->
+    <div class="bg-dark border-end" id="sidebar-wrapper">
+        <div class="sidebar-heading text-white p-4 fw-bold text-center border-bottom border-secondary">
+            <i class="bi bi-hospital me-2"></i>Admin Portal
+        </div>
+        <div class="list-group list-group-flush p-3">
+            <button class="list-group-item list-group-item-action bg-transparent text-white-50 border-0 mb-1 rounded"
+                [class.active]="activeTab === 'dashboard'" (click)="setActiveTab('dashboard')">
+                <i class="bi bi-speedometer2 me-2"></i>Dashboard
+            </button>
+            <button class="list-group-item list-group-item-action bg-transparent text-white-50 border-0 mb-1 rounded"
+                [class.active]="activeTab === 'doctors'" (click)="setActiveTab('doctors')">
+                <i class="bi bi-people me-2"></i>Doctors
+            </button>
+            <button class="list-group-item list-group-item-action bg-transparent text-white-50 border-0 mb-1 rounded"
+                [class.active]="activeTab === 'patients'" (click)="setActiveTab('patients')">
+                <i class="bi bi-person me-2"></i>Patients
+            </button>
+            <button class="list-group-item list-group-item-action bg-transparent text-white-50 border-0 mb-1 rounded"
+                [class.active]="activeTab === 'appointments'" (click)="setActiveTab('appointments')">
+                <i class="bi bi-calendar-event me-2"></i>Schedules
+            </button>
+            <button class="list-group-item list-group-item-action bg-transparent text-white-50 border-0 mb-1 rounded"
+                [class.active]="activeTab === 'reports'" (click)="setActiveTab('reports')">
+                <i class="bi bi-graph-up me-2"></i>Reports & Analytics
+            </button>
+            <button class="list-group-item list-group-item-action bg-transparent text-danger border-0 mt-5 rounded"
+                (click)="logout()">
+                <i class="bi bi-box-arrow-right me-2"></i>Logout
+            </button>
+        </div>
+    </div>
+
+    <!-- Page Content -->
+    <div id="page-content-wrapper" class="w-100 bg-light">
+        <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom px-4 py-3 shadow-sm">
+            <div class="d-flex align-items-center">
+                <h4 class="m-0 text-secondary">
+                    {{ activeTab | titlecase }} Overview
+                </h4>
+            </div>
+        </nav>
+
+        <div class="container-fluid px-4 py-4">
+            <!-- Loading State -->
+            <div *ngIf="isLoading" class="text-center py-5">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-2 text-muted">Loading dashboard data...</p>
+            </div>
+
+            <!-- Empty State -->
+            <div *ngIf="!isLoading && !dashboardData" class="text-center py-5">
+                <i class="bi bi-exclamation-circle text-warning fs-1"></i>
+                <h5 class="mt-3">No dashboard data available</h5>
+                <button class="btn btn-outline-primary mt-2" (click)="loadDashboard()">Retry Load</button>
+            </div>
+
+            <!-- dashboard View -->
+            <section *ngIf="activeTab === 'dashboard' && dashboardData && !isLoading" class="dashboard-stats fade-in">
+                <!-- summary cards -->
+                <div class="row g-4 mb-4">
+                    <div class="col-xl-3 col-md-6">
+                        <div
+                            class="card border-0 shadow-sm h-100 border-start border-4 border-primary gradient-card blue rounded-4">
+                            <div class="card-body p-4">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <div>
+                                        <div class="text-muted-vibrant small fw-bold text-uppercase mb-1">Total
+                                            Appointments</div>
+                                        <div class="h2 mb-0 fw-bold">{{ dashboardData.totalAppointments }}</div>
+                                    </div>
+                                    <div class="stat-icon blue">
+                                        <i class="bi bi-calendar2-check"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-3 col-md-6">
+                        <div
+                            class="card border-0 shadow-sm h-100 border-start border-4 border-info gradient-card info rounded-4">
+                            <div class="card-body p-4">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <div>
+                                        <div class="text-muted-vibrant small fw-bold text-uppercase mb-1">Pending</div>
+                                        <div class="h2 mb-0 fw-bold">{{ dashboardData.pendingAppointments }}</div>
+                                    </div>
+                                    <div class="stat-icon info">
+                                        <i class="bi bi-hourglass-split"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-3 col-md-6">
+                        <div
+                            class="card border-0 shadow-sm h-100 border-start border-4 border-warning gradient-card warning rounded-4">
+                            <div class="card-body p-4">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <div>
+                                        <div class="text-muted-vibrant small fw-bold text-uppercase mb-1">Confirmed
+                                        </div>
+                                        <div class="h2 mb-0 fw-bold">{{ dashboardData.confirmedAppointments }}</div>
+                                    </div>
+                                    <div class="stat-icon warning">
+                                        <i class="bi bi-check2-circle"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-3 col-md-6">
+                        <div
+                            class="card border-0 shadow-sm h-100 border-start border-4 border-success gradient-card green rounded-4">
+                            <div class="card-body p-4">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <div>
+                                        <div class="text-muted-vibrant small fw-bold text-uppercase mb-1">Completed
+                                        </div>
+                                        <div class="h2 mb-0 fw-bold">{{ dashboardData.completedAppointments }}</div>
+                                    </div>
+                                    <div class="stat-icon green">
+                                        <i class="bi bi-clipboard-check"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-4">
+                    <!-- Recent Appointments -->
+                    <div class="col-lg-8">
+                        <div class="card border-0 shadow-sm h-100 rounded-4">
+                            <div class="card-header bg-white py-3 border-0 d-flex align-items-center">
+                                <h6 class="m-0 fw-bold text-dark"><i
+                                        class="bi bi-clock-history me-2 text-primary"></i>Recent Appointments</h6>
+                                <button class="btn btn-link btn-sm ms-auto text-decoration-none"
+                                    (click)="setActiveTab('appointments')">View All</button>
+                            </div>
+                            <div class="card-body p-0" style="height: 350px;">
+                                <ag-grid-angular
+                                    style="width: 100%; height: 100%;"
+                                    class="ag-theme-alpine"
+                                    [rowData]="dashboardData.appointments || []"
+                                    [columnDefs]="apptCols"
+                                    [defaultColDef]="defaultColDef"
+                                    [pagination]="false">
+                                </ag-grid-angular>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Status Breakdown -->
+                    <div class="col-lg-4">
+                        <div class="card border-0 shadow-sm h-100 rounded-4">
+                            <div class="card-header bg-white py-3 border-0">
+                                <h6 class="m-0 fw-bold text-dark"><i
+                                        class="bi bi-pie-chart me-2 text-primary"></i>Status Distribution</h6>
+                            </div>
+                            <div class="card-body pt-0">
+                                <!-- Pending -->
+                                <div class="status-summary mb-4">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <span class="small fw-bold">Pending</span>
+                                        <span class="small text-muted">{{ (dashboardData.pendingAppointments! /
+                                            (dashboardData.totalAppointments || 1)) * 100 | number:'1.0-0' }}%</span>
+                                    </div>
+                                    <div class="progress" style="height: 8px;">
+                                        <div class="progress-bar bg-info" role="progressbar"
+                                            [style.width.%]="(dashboardData.pendingAppointments! / (dashboardData.totalAppointments || 1)) * 100">
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Confirmed -->
+                                <div class="status-summary mb-4">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <span class="small fw-bold">Confirmed</span>
+                                        <span class="small text-muted">{{ (dashboardData.confirmedAppointments! /
+                                            (dashboardData.totalAppointments || 1)) * 100 | number:'1.0-0' }}%</span>
+                                    </div>
+                                    <div class="progress" style="height: 8px;">
+                                        <div class="progress-bar bg-warning" role="progressbar"
+                                            [style.width.%]="(dashboardData.confirmedAppointments! / (dashboardData.totalAppointments || 1)) * 100">
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Completed -->
+                                <div class="status-summary mb-4">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <span class="small fw-bold">Completed</span>
+                                        <span class="small text-muted">{{ (dashboardData.completedAppointments! /
+                                            (dashboardData.totalAppointments || 1)) * 100 | number:'1.0-0' }}%</span>
+                                    </div>
+                                    <div class="progress" style="height: 8px;">
+                                        <div class="progress-bar bg-success" role="progressbar"
+                                            [style.width.%]="(dashboardData.completedAppointments! / (dashboardData.totalAppointments || 1)) * 100">
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Cancelled -->
+                                <div class="status-summary">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <span class="small fw-bold">Cancelled</span>
+                                        <span class="small text-muted">{{ (dashboardData.cancelledAppointments! /
+                                            (dashboardData.totalAppointments || 1)) * 100 | number:'1.0-0' }}%</span>
+                                    </div>
+                                    <div class="progress" style="height: 8px;">
+                                        <div class="progress-bar bg-danger" role="progressbar"
+                                            [style.width.%]="(dashboardData.cancelledAppointments! / (dashboardData.totalAppointments || 1)) * 100">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mt-4 pt-4 border-top">
+                                    <div class="row text-center">
+                                        <div class="col-6 border-end">
+                                            <div class="h4 fw-bold mb-0 text-primary">{{ dashboardData.doctorCount }}
+                                            </div>
+                                            <div class="small text-muted text-uppercase">Doctors</div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="h4 fw-bold mb-0 text-success">{{ dashboardData.patientCount
+                                                }}</div>
+                                            <div class="small text-muted text-uppercase">Patients</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Doctors View -->
+            <section *ngIf="activeTab === 'doctors'" class="fade-in">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                        <h5 class="m-0 font-weight-bold text-primary">Doctor List</h5>
+                        <button class="btn btn-primary btn-sm rounded-pill" (click)="openAddDoctor()">
+                            <i class="bi bi-plus-lg me-1"></i>Add Doctor
+                        </button>
+                    </div>
+                    <div class="card-body p-0">
+                        <ag-grid-angular
+                            style="width: 100%; height: 500px;"
+                            class="ag-theme-alpine"
+                            [rowData]="doctors"
+                            [columnDefs]="doctorCols"
+                            [defaultColDef]="defaultColDef"
+                            [pagination]="true"
+                            [paginationPageSize]="10">
+                        </ag-grid-angular>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Patients View -->
+            <section *ngIf="activeTab === 'patients'" class="fade-in">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                        <h5 class="m-0 font-weight-bold text-primary">Patient List</h5>
+                        <button class="btn btn-primary btn-sm rounded-pill" (click)="openAddPatient()">
+                            <i class="bi bi-plus-lg me-1"></i>Add Patient
+                        </button>
+                    </div>
+                    <div class="card-body p-0">
+                        <ag-grid-angular
+                            style="width: 100%; height: 500px;"
+                            class="ag-theme-alpine"
+                            [rowData]="patients"
+                            [columnDefs]="patientCols"
+                            [defaultColDef]="defaultColDef"
+                            [pagination]="true"
+                            [paginationPageSize]="10">
+                        </ag-grid-angular>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Appointments View -->
+            <section *ngIf="activeTab === 'appointments'" class="fade-in">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white py-3">
+                        <h5 class="m-0 font-weight-bold text-primary">Clinic Schedules (Today)</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <ag-grid-angular
+                            style="width: 100%; height: 500px;"
+                            class="ag-theme-alpine"
+                            [rowData]="appointments"
+                            [columnDefs]="apptCols"
+                            [defaultColDef]="defaultColDef"
+                            [pagination]="true"
+                            [paginationPageSize]="10">
+                        </ag-grid-angular>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Reports View -->
+            <section *ngIf="activeTab === 'reports'" class="fade-in">
+                <app-reports-dashboard></app-reports-dashboard>
+            </section>
+        </div>
+    </div>
+
+    <!-- Modals (Using Bootstrap styling overlay) -->
+    <div class="modal fade show d-block" *ngIf="showDoctorModal" style="background: rgba(0,0,0,0.5)">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">{{ editingDoctor ? 'Edit Doctor' : 'Add New Doctor' }}</h5>
+                    <button type="button" class="btn-close btn-close-white"
+                        (click)="showDoctorModal = false; editingDoctor = null"></button>
+                </div>
+                <div class="modal-body">
+                    <form [formGroup]="doctorForm" (ngSubmit)="submitDoctor()">
+                        <div class="mb-3">
+                            <label class="form-label">Full Name</label>
+                            <input class="form-control" formControlName="name" placeholder="e.g. Siva Sankar">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Specialization</label>
+                            <input class="form-control" formControlName="specialization" placeholder="e.g. Cardiology">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Email Address</label>
+                            <input class="form-control" formControlName="email" type="email"
+                                placeholder="doctor@clinic.com">
+                        </div>
+                        <div class="d-flex justify-content-end">
+                            <button type="button" class="btn btn-light me-2"
+                                (click)="showDoctorModal = false; editingDoctor = null">Cancel</button>
+                            <button type="submit" class="btn btn-primary" [disabled]="doctorForm.invalid">
+                                {{ editingDoctor ? 'Update Doctor' : 'Save Doctor' }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade show d-block" *ngIf="showPatientModal" style="background: rgba(0,0,0,0.5)">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">{{ editingPatient ? 'Edit Patient' : 'Add New Patient' }}</h5>
+                    <button type="button" class="btn-close btn-close-white"
+                        (click)="showPatientModal = false; editingPatient = null"></button>
+                </div>
+                <div class="modal-body">
+                    <form [formGroup]="patientForm" (ngSubmit)="submitPatient()">
+                        <div class="mb-3">
+                            <label class="form-label">Full Name</label>
+                            <input class="form-control" formControlName="name">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Email Address</label>
+                            <input type="email" class="form-control" formControlName="email" placeholder="patient@example.com">
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Age</label>
+                                <input type="number" class="form-control" formControlName="age">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Contact</label>
+                                <input class="form-control" formControlName="contactNumber">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Problem Description</label>
+                            <textarea class="form-control" formControlName="problemDescription" rows="3"></textarea>
+                        </div>
+                        <div class="d-flex justify-content-end">
+                            <button type="button" class="btn btn-light me-2"
+                                (click)="showPatientModal = false; editingPatient = null">Cancel</button>
+                            <button type="submit" class="btn btn-primary" [disabled]="patientForm.invalid">
+                                {{ editingPatient ? 'Update Patient' : 'Save Patient' }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

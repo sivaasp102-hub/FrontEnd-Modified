@@ -1,0 +1,46 @@
+.receptionist-container {
+    .timeline-item {
+        position: relative;
+
+        .timeline-dot {
+            position: absolute;
+            left: -5px;
+            top: 2px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+    }
+
+
+    .pulse-animation {
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+
+        0%,
+        100% {
+            box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7);
+        }
+
+        50% {
+            box-shadow: 0 0 0 10px rgba(220, 53, 69, 0);
+        }
+    }
+
+
+    .nav-pills .nav-link.active {
+        background-color: #17a2b8;
+        color: white;
+    }
+
+    .nav-pills .nav-link {
+        color: #6c757d;
+        transition: all 0.3s;
+
+        &:hover {
+            background-color: #e9ecef;
+        }
+    }
+}
