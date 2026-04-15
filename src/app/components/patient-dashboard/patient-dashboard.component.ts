@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PatientService } from '../../services/patient/patient.service';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, FormsModule, Validators } from '@angular/forms';
 import { DoctorService } from '../../services/doctor/doctor.service';
 import { Appointment, AppointmentStatus } from '../../models/doctor.models';
 import { Patient } from '../../models/admin.models';
@@ -12,7 +12,7 @@ import { Subject, takeUntil } from 'rxjs';
 @Component({
     selector: 'app-patient-dashboard',
     standalone: true,
-    imports: [CommonModule, ReactiveFormsModule],
+    imports: [CommonModule, ReactiveFormsModule, FormsModule],
     templateUrl: './patient-dashboard.component.html',
     styleUrl: './patient-dashboard.component.scss'
 })
@@ -25,7 +25,17 @@ export class PatientDashboardComponent implements OnInit, OnDestroy {
     profileForm: FormGroup;
     bookForm: FormGroup;
     AppointmentStatus = AppointmentStatus;
+    doctorSearch = '';
     private destroy$ = new Subject<void>();
+
+    get modalFilteredDoctors() {
+        const query = this.doctorSearch.toLowerCase().trim();
+        if (!query) return this.doctors;
+        return this.doctors.filter(d => 
+            d.name.toLowerCase().includes(query) || 
+            (d.specialization && d.specialization.toLowerCase().includes(query))
+        );
+    }
 
 
 
@@ -38,14 +48,14 @@ export class PatientDashboardComponent implements OnInit, OnDestroy {
         private cdr: ChangeDetectorRef
     ) {
         this.profileForm = this.fb.group({
-            name: ['', Validators.required],
-            age: [0, [Validators.required, Validators.min(0)]],
-            contactNumber: ['', Validators.required],
+            name: ['', [Validators.required, Validators.pattern('^[a-zA-Z ]+$')]],
+            age: [0, [Validators.required, Validators.min(0), Validators.max(120)]],
+            contactNumber: ['', [Validators.required, Validators.pattern('^[0-9]{10}$')]],
             problemDescription: [''],
             allergies: [''],
             chronicDiseases: [''],
-            emergencyContactName: [''],
-            emergencyContactPhone: ['']
+            emergencyContactName: ['', [Validators.pattern('^[a-zA-Z ]+$')]],
+            emergencyContactPhone: ['', [Validators.pattern('^[0-9]{10}$')]]
         });
 
         this.bookForm = this.fb.group({
@@ -112,6 +122,7 @@ export class PatientDashboardComponent implements OnInit, OnDestroy {
                     this.loadAppointments();
                     this.showBookModal = false;
                     this.bookForm.reset();
+                    this.doctorSearch = '';
                 });
         }
     }
@@ -154,5 +165,18 @@ export class PatientDashboardComponent implements OnInit, OnDestroy {
 
     getStatusLabel(status: number): string {
         return AppointmentStatus[status];
+    }
+
+    onDoctorSearchChange() {
+        const query = this.doctorSearch.toLowerCase();
+        const found = this.doctors.find(d => 
+            `dr. ${d.name}`.toLowerCase() === query || 
+            d.name.toLowerCase() === query
+        );
+        if (found) {
+            this.bookForm.patchValue({ doctorId: found.id });
+        } else {
+            this.bookForm.get('doctorId')?.setValue(null);
+        }
     }
 }

@@ -12,26 +12,36 @@
       <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
         <div class="row g-3">
           <div class="col-12">
-            <div class="form-floating">
-              <input type="text" class="form-control" id="name" formControlName="name" placeholder="Full Name"
+            <div>
+              <label class="form-label required" for="name">Full Name</label>
+              <input type="text" class="form-control" id="name" formControlName="name"
+                placeholder="Enter your full name"
                 [class.is-invalid]="registerForm.get('name')?.touched && registerForm.get('name')?.invalid">
-              <label for="name">Full Name</label>
+              <div class="invalid-feedback" *ngIf="registerForm.get('name')?.errors?.['required']">Name is required.
+              </div>
+              <div class="invalid-feedback" *ngIf="registerForm.get('name')?.errors?.['pattern']">Name cannot contain
+                numbers.</div>
             </div>
           </div>
 
-          <div class="col-md-6">
-            <div class="form-floating">
+          <div class="col-md-12">
+            <div>
+              <label class="form-label required" for="email">Email Address</label>
               <input type="email" class="form-control" id="email" formControlName="email" placeholder="name@example.com"
                 [class.is-invalid]="registerForm.get('email')?.touched && registerForm.get('email')?.invalid">
-              <label for="email">Email Address</label>
+              <div class="invalid-feedback" *ngIf="registerForm.get('email')?.errors?.['required']">Email is required.</div>
+              <div class="invalid-feedback" *ngIf="registerForm.get('email')?.errors?.['email']">Must be a valid email.</div>
             </div>
           </div>
 
-          <div class="col-md-6">
-            <div class="form-floating">
-              <input type="password" class="form-control" id="password" formControlName="password" placeholder="Password"
+          <div class="col-md-12">
+            <div>
+              <label class="form-label required" for="password">Password</label>
+              <input type="password" class="form-control" id="password" formControlName="password"
+                placeholder="Choose a password"
                 [class.is-invalid]="registerForm.get('password')?.touched && registerForm.get('password')?.invalid">
-              <label for="password">Password</label>
+              <div class="invalid-feedback" *ngIf="registerForm.get('password')?.errors?.['required']">Password is required.</div>
+              <div class="invalid-feedback" *ngIf="registerForm.get('password')?.errors?.['minlength']">Password must be at least 6 characters.</div>
             </div>
           </div>
 
@@ -57,52 +67,67 @@
 
           <!-- Patient Specific -->
           <ng-container *ngIf="registerForm.get('role')?.value === 'Patient'">
-            <div class="col-md-4">
-              <div class="form-floating">
-                <input type="number" class="form-control" id="age" formControlName="age" placeholder="Age">
-                <label for="age">Age</label>
-              </div>
-            </div>
-            <div class="col-md-8">
-              <div class="form-floating">
-                <input type="text" class="form-control" id="contact" formControlName="contactNumber"
-                  placeholder="Contact">
-                <label for="contact">Contact Number</label>
+            <div class="col-md-6">
+              <div>
+                <label class="form-label" for="age">Age</label>
+                <input type="number" class="form-control" id="age" formControlName="age" placeholder="Age"
+                  [class.is-invalid]="registerForm.get('age')?.touched && registerForm.get('age')?.invalid">
+                <div class="invalid-feedback"
+                  *ngIf="registerForm.get('age')?.errors?.['min'] || registerForm.get('age')?.errors?.['max']">Age must
+                  be between 1 and 120.</div>
               </div>
             </div>
             <div class="col-md-6">
-              <div class="form-floating">
+              <div>
+                <label class="form-label required" for="contact">Contact Number</label>
+                <input type="text" class="form-control" id="contact" formControlName="contactNumber"
+                  placeholder="Contact"
+                  [class.is-invalid]="registerForm.get('contactNumber')?.touched && registerForm.get('contactNumber')?.invalid">
+                <div class="invalid-feedback" *ngIf="registerForm.get('contactNumber')?.errors?.['required']">Contact
+                  number is required.</div>
+                <div class="invalid-feedback" *ngIf="registerForm.get('contactNumber')?.errors?.['pattern']">Must be
+                  exactly 10 digits with no spaces.</div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div>
+                <label class="form-label" for="allergies">Allergies (if any)</label>
                 <input type="text" class="form-control" id="allergies" formControlName="allergies"
                   placeholder="Allergies">
-                <label for="allergies">Allergies (if any)</label>
               </div>
             </div>
             <div class="col-md-6">
-              <div class="form-floating">
+              <div>
+                <label class="form-label" for="chronicDiseases">Chronic Diseases</label>
                 <input type="text" class="form-control" id="chronicDiseases" formControlName="chronicDiseases"
                   placeholder="Chronic Diseases">
-                <label for="chronicDiseases">Chronic Diseases</label>
               </div>
             </div>
             <div class="col-md-6">
-              <div class="form-floating">
+              <div>
+                <label class="form-label" for="emergencyName">Emergency Contact Name</label>
                 <input type="text" class="form-control" id="emergencyName" formControlName="emergencyContactName"
-                  placeholder="Emergency Contact Name">
-                <label for="emergencyName">Emergency Contact Name</label>
+                  placeholder="Name"
+                  [class.is-invalid]="registerForm.get('emergencyContactName')?.touched && registerForm.get('emergencyContactName')?.invalid">
+                <div class="invalid-feedback" *ngIf="registerForm.get('emergencyContactName')?.errors?.['pattern']">Name
+                  cannot contain numbers.</div>
               </div>
             </div>
             <div class="col-md-6">
-              <div class="form-floating">
+              <div>
+                <label class="form-label" for="emergencyPhone">Emergency Contact Phone</label>
                 <input type="text" class="form-control" id="emergencyPhone" formControlName="emergencyContactPhone"
-                  placeholder="Emergency Contact Phone">
-                <label for="emergencyPhone">Emergency Contact Phone</label>
+                  placeholder="Phone"
+                  [class.is-invalid]="registerForm.get('emergencyContactPhone')?.touched && registerForm.get('emergencyContactPhone')?.invalid">
+                <div class="invalid-feedback" *ngIf="registerForm.get('emergencyContactPhone')?.errors?.['pattern']">
+                  Must be exactly 10 digits with no spaces.</div>
               </div>
             </div>
             <div class="col-12">
-              <div class="form-floating">
+              <div>
+                <label class="form-label" for="problem">Health Concerns / Notes</label>
                 <textarea class="form-control" id="problem" formControlName="problemDescription"
-                  placeholder="Description" style="height: 100px"></textarea>
-                <label for="problem">Health Concerns / Notes</label>
+                  placeholder="Health concerns or special notes" style="height: 100px"></textarea>
               </div>
             </div>
           </ng-container>
@@ -110,10 +135,10 @@
           <!-- Doctor Specific -->
           <ng-container *ngIf="registerForm.get('role')?.value === 'Doctor'">
             <div class="col-12">
-              <div class="form-floating">
+              <div>
+                <label class="form-label" for="specialization">Specialization (e.g. Cardiology)</label>
                 <input type="text" class="form-control" id="specialization" formControlName="specialization"
                   placeholder="Specialization">
-                <label for="specialization">Specialization (e.g. Cardiology)</label>
               </div>
             </div>
           </ng-container>
@@ -135,4 +160,4 @@
       </form>
     </div>
   </div>
-</div>
+</div>

@@ -10,17 +10,17 @@
       </div>
 
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-        <div class="form-floating mb-3">
-          <input type="email" class="form-control" id="email" formControlName="email" placeholder="name@example.com"
+        <div class="mb-3">
+          <label class="form-label required" for="email"><i class="bi bi-envelope me-2"></i>Email Address</label>
+          <input type="email" class="form-control" id="email" formControlName="email" placeholder="Enter your email"
             [class.is-invalid]="loginForm.get('email')?.touched && loginForm.get('email')?.invalid">
-          <label for="email"><i class="bi bi-envelope me-2"></i>Email Address</label>
           <div class="invalid-feedback">Valid email is required</div>
         </div>
 
-        <div class="form-floating mb-4">
-          <input type="password" class="form-control" id="password" formControlName="password" placeholder="Password"
+        <div class="mb-4">
+          <label class="form-label required" for="password"><i class="bi bi-lock me-2"></i>Password</label>
+          <input type="password" class="form-control" id="password" formControlName="password" placeholder="Enter your password"
             [class.is-invalid]="loginForm.get('password')?.touched && loginForm.get('password')?.invalid">
-          <label for="password"><i class="bi bi-lock me-2"></i>Password</label>
           <div class="invalid-feedback">Password must be at least 6 characters</div>
         </div>
 
@@ -40,4 +40,4 @@
       </form>
     </div>
   </div>
-</div>
+</div>

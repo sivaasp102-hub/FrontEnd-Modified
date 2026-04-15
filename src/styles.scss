@@ -10,7 +10,7 @@ $danger: #e74a3b;
 $light: #f8f9fc;
 $dark: #5a5c69;
 
-$font-family-base: 'Poppins', sans-serif;
+$font-family-base: 'Poppins', 'Open Sans';
 
 
 @import 'ag-grid-community/styles/ag-grid.css';
@@ -21,6 +21,17 @@ $font-family-base: 'Poppins', sans-serif;
 body {
     background-color: #f8f9fc;
     font-family: 'Poppins', sans-serif;
+
+    /* Ag-Grid 32+ Modern CSS Variable Theme */
+    --ag-header-background-color: #4e73df !important;
+    --ag-header-foreground-color: #ffffff !important;
+    --ag-header-cell-hover-background-color: #224abe !important;
+    --ag-header-cell-moving-background-color: #2e59d9 !important;
+    --ag-header-column-separator-display: none !important;
+    --ag-row-hover-color: #eaefff !important;
+    --ag-selected-row-background-color: #d1dcff !important;
+    --ag-font-family: 'Poppins', sans-serif !important;
+    --ag-border-radius: 12px !important;
 }
 
 .card {
@@ -39,6 +50,24 @@ body {
     font-weight: 500;
 }
 
+.btn-primary {
+    color: #ffffff !important;
+}
+
+.form-label {
+    font-weight: 500;
+    color: #000308;
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+}
+
+.form-label.required::after {
+    content: " *";
+    color: red;
+    font-weight: bold;
+}
+
+
 .form-control {
     border-radius: 5px;
     padding: 0.75rem;
@@ -46,11 +75,83 @@ body {
     &:focus {
         box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
     }
+
+    &.is-invalid,
+    .form-select.is-invalid,
+    .form-check-input.is-invalid {
+        border-color: #e74a3b !important;
+        background-image: none !important;
+
+        &:focus {
+            box-shadow: 0 0 0 0.2rem rgba(231, 74, 59, 0.25) !important;
+        }
+    }
+}
+
+.form-container {
+    .form-container {
+        max-height: 80vh;
+        overflow-y: auto;
+        margin: 0 auto;
+        width: 60%;
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+    }
+
 }
 
 .ag-cell {
     display: flex;
     align-items: center;
+    background-color: rgba(78, 115, 223, 0.05);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Modern Ag-Grid Global Overrides - Bulletproof Style */
+[class^="ag-theme-"], [class*=" ag-theme-"] {
+    border-radius: 12px !important;
+    overflow: hidden !important;
+    border: 1px solid #e2e8f0 !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+
+    .ag-header {
+        background: linear-gradient(135deg, #4e73df 0%, #224abe 100%) !important;
+        border-bottom: none !important;
+    }
+
+    .ag-header-cell-label {
+        color: #ffffff !important;
+        font-weight: 700 !important;
+        text-transform: uppercase !important;
+        font-size: 0.75rem !important;
+        letter-spacing: 0.05em !important;
+    }
+
+    .ag-header-icon {
+        color: #ffffff !important;
+        * { color: #ffffff !important; fill: #ffffff !important; }
+    }
+    .ag-header-cell-menu-button, .ag-filter-icon {
+        color: #ffffff !important;
+        fill: #ffffff !important;
+    }
+
+    .ag-row {
+        border-bottom: 1px solid #f1f5f9 !important;
+    }
+
+    .ag-cell {
+        display: flex !important;
+        align-items: center !important;
+        padding-left: 16px !important;
+        padding-right: 16px !important;
+        color: #334155 !important;
+    }
+}
+
+.table td {
+    background-color: rgba(78, 115, 223, 0.03);
 }
 
 .btn-xs {

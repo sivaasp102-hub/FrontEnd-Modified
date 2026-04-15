@@ -1,7 +1,7 @@
 
 import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, FormsModule, Validators } from '@angular/forms';
 import { ReceptionistService } from '../../services/receptionist/receptionist.service';
 import { Appointment, AppointmentStatus } from '../../models/doctor.models';
 import { Patient, DoctorProfile } from '../../models/admin.models';
@@ -14,7 +14,7 @@ import { ToastService } from '../../services/toast.service';
 @Component({
     selector: 'app-receptionist-dashboard',
     standalone: true,
-    imports: [CommonModule, ReactiveFormsModule],
+    imports: [CommonModule, ReactiveFormsModule, FormsModule],
     templateUrl: './receptionist-dashboard.component.html',
     styleUrl: './receptionist-dashboard.component.scss'
 })
@@ -33,6 +33,8 @@ export class ReceptionistDashboardComponent implements OnInit, OnDestroy {
     patientDocuments: any[] = [];
     showDetailsModal = false;
     activeView: 'appointments' | 'patients' = 'appointments';
+    patientSearch = '';
+    doctorSearch = '';
     private destroy$ = new Subject<void>();
 
 
@@ -70,6 +72,24 @@ export class ReceptionistDashboardComponent implements OnInit, OnDestroy {
         );
     }
 
+    get modalFilteredPatients() {
+        const query = this.patientSearch.toLowerCase().trim();
+        if (!query) return this.patients;
+        return this.patients.filter(p => 
+            p.name.toLowerCase().includes(query) || 
+            p.id?.toString().includes(query)
+        );
+    }
+
+    get modalFilteredDoctors() {
+        const query = this.doctorSearch.toLowerCase().trim();
+        if (!query) return this.doctors;
+        return this.doctors.filter(d => 
+            d.name.toLowerCase().includes(query) || 
+            d.specialization.toLowerCase().includes(query)
+        );
+    }
+
     constructor(
         private receptionistService: ReceptionistService,
         private fb: FormBuilder,
@@ -88,14 +108,14 @@ export class ReceptionistDashboardComponent implements OnInit, OnDestroy {
         });
 
         this.patientForm = this.fb.group({
-            name: ['', Validators.required],
-            age: [null, [Validators.required, Validators.min(0)]],
-            contactNumber: ['', Validators.required],
+            name: ['', [Validators.required, Validators.pattern('^[a-zA-Z ]+$')]],
+            age: [null, [Validators.required, Validators.min(0), Validators.max(120)]],
+            contactNumber: ['', [Validators.required, Validators.pattern('^[0-9]{10}$')]],
             problemDescription: [''],
             allergies: [''],
             chronicDiseases: [''],
-            emergencyContactName: [''],
-            emergencyContactPhone: [''],
+            emergencyContactName: ['', [Validators.pattern('^[a-zA-Z ]+$')]],
+            emergencyContactPhone: ['', [Validators.pattern('^[0-9]{10}$')]],
             email: ['', [Validators.required, Validators.email]],
             password: ['', [Validators.required, Validators.minLength(6)]]
         });
@@ -105,6 +125,25 @@ export class ReceptionistDashboardComponent implements OnInit, OnDestroy {
         this.loadAppointments();
         this.loadPatients();
         this.loadDoctors();
+
+        this.apptForm.get('patientId')?.valueChanges
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(patientId => {
+                if (patientId) {
+                    const patient = this.patients.find(p => p.id === patientId);
+                    if (patient) {
+                        this.apptForm.patchValue({
+                            complaint: patient.problemDescription || '',
+                            urgency: patient.urgency || 'Stable'
+                        }, { emitEvent: false });
+                    }
+                } else {
+                    this.apptForm.patchValue({
+                        complaint: '',
+                        urgency: 'Stable'
+                    }, { emitEvent: false });
+                }
+            });
     }
 
     ngOnDestroy(): void {
@@ -293,6 +332,8 @@ export class ReceptionistDashboardComponent implements OnInit, OnDestroy {
                     this.loadAppointments();
                     this.showModal = false;
                     this.apptForm.reset();
+                    this.patientSearch = '';
+                    this.doctorSearch = '';
                 });
         }
     }
@@ -336,7 +377,36 @@ export class ReceptionistDashboardComponent implements OnInit, OnDestroy {
     }
 
     bookForPatient(patient: Patient) {
+        this.patientSearch = patient.name;
         this.apptForm.patchValue({ patientId: patient.id });
         this.showModal = true;
+    }
+
+    selectPatient(patient: Patient) {
+        this.patientSearch = patient.name;
+        this.apptForm.patchValue({ patientId: patient.id });
+    }
+
+    selectDoctor(doctor: DoctorProfile) {
+        this.doctorSearch = `Dr. ${doctor.name}`;
+        this.apptForm.patchValue({ doctorId: doctor.id });
+    }
+
+    onPatientSearchChange() {
+        const found = this.patients.find(p => p.name === this.patientSearch);
+        if (found) {
+            this.apptForm.patchValue({ patientId: found.id });
+        } else {
+            this.apptForm.get('patientId')?.setValue(null);
+        }
+    }
+
+    onDoctorSearchChange() {
+        const found = this.doctors.find(d => `Dr. ${d.name}` === this.doctorSearch);
+        if (found) {
+            this.apptForm.patchValue({ doctorId: found.id });
+        } else {
+            this.apptForm.get('doctorId')?.setValue(null);
+        }
     }
 }

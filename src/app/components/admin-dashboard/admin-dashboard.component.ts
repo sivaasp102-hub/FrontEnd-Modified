@@ -8,10 +8,10 @@ import { AdminDashboardViewModel, DoctorProfile, Patient } from '../../models/ad
 import { AppointmentStatus } from '../../models/doctor.models';
 import { ReportsDashboardComponent } from '../reports-dashboard/reports-dashboard.component';
 import { AgGridAngular } from 'ag-grid-angular';
-import { ColDef, ModuleRegistry, ClientSideRowModelModule } from 'ag-grid-community';
+import { ColDef, ModuleRegistry, AllCommunityModule } from 'ag-grid-community';
 import { Subject, takeUntil } from 'rxjs';
 
-ModuleRegistry.registerModules([ClientSideRowModelModule]);
+ModuleRegistry.registerModules([AllCommunityModule]);
 
 @Component({
     selector: 'app-admin-dashboard',
@@ -39,21 +39,21 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     editingPatient: Patient | null = null;
     private destroy$ = new Subject<void>();
 
-    
+
     doctorCols: ColDef[] = [
-        { field: 'name', headerName: 'Doctor Name', flex: 1 },
-        { field: 'specialization', headerName: 'Specialization', flex: 1 },
-        { field: 'email', headerName: 'Email', flex: 1 },
+        { field: 'name', headerName: 'Doctor Name', flex: 1, cellClass: 'column-highlight-primary', filter: 'agTextColumnFilter' },
+        { field: 'specialization', headerName: 'Specialization', flex: 1, filter: 'agTextColumnFilter' },
+        { field: 'email', headerName: 'Email', flex: 1, filter: 'agTextColumnFilter' },
         {
             headerName: 'Actions',
             cellRenderer: (p: any) => {
                 const id = p.data.id || p.data.Id;
                 return `
                 <div class="d-flex align-items-center h-100">
-                    <button class="btn btn-xs btn-primary me-2 px-2 py-1" onclick="event.stopPropagation(); window.adminEditDoc(${id})">
+                    <button class="btn btn-xs btn-primary text-white me-2 px-2 py-1" onclick="event.stopPropagation(); window.adminEditDoc(${id})">
                         <i class="bi bi-pencil-square"></i> Edit
                     </button>
-                    <button class="btn btn-xs btn-danger px-2 py-1" onclick="event.stopPropagation(); window.adminDelDoc(${id})">
+                    <button class="btn btn-xs btn-danger text-white px-2 py-1" onclick="event.stopPropagation(); window.adminDelDoc(${id})">
                         <i class="bi bi-trash"></i> Delete
                     </button>
                 </div>
@@ -66,21 +66,21 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     ];
 
     patientCols: ColDef[] = [
-        { field: 'name', headerName: 'Patient Name', flex: 1 },
-        { field: 'email', headerName: 'Email', flex: 1 },
-        { field: 'age', headerName: 'Age', width: 80 },
-        { field: 'contactNumber', headerName: 'Contact', flex: 1 },
-        { field: 'problemDescription', headerName: 'Condition', flex: 1.5 },
+        { field: 'name', headerName: 'Patient Name', flex: 1, cellClass: 'column-highlight-primary', filter: 'agTextColumnFilter' },
+        { field: 'email', headerName: 'Email', flex: 1, filter: 'agTextColumnFilter' },
+        { field: 'age', headerName: 'Age', width: 80, filter: 'agNumberColumnFilter' },
+        { field: 'contactNumber', headerName: 'Contact', flex: 1, filter: 'agTextColumnFilter' },
+        { field: 'problemDescription', headerName: 'Condition', flex: 1.5, filter: 'agTextColumnFilter' },
         {
             headerName: 'Actions',
             cellRenderer: (p: any) => {
                 const id = p.data.id || p.data.Id;
                 return `
                 <div class="d-flex align-items-center h-100">
-                    <button class="btn btn-xs btn-primary me-2 px-2 py-1" onclick="event.stopPropagation(); window.adminEditPat(${id})">
+                    <button class="btn btn-xs btn-primary text-white me-2 px-2 py-1" onclick="event.stopPropagation(); window.adminEditPat(${id})">
                         <i class="bi bi-pencil-square"></i> Edit
                     </button>
-                    <button class="btn btn-xs btn-danger px-2 py-1" onclick="event.stopPropagation(); window.adminDelPat(${id})">
+                    <button class="btn btn-xs btn-danger text-white px-2 py-1" onclick="event.stopPropagation(); window.adminDelPat(${id})">
                         <i class="bi bi-trash"></i> Delete
                     </button>
                 </div>
@@ -93,38 +93,45 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     ];
 
     apptCols: ColDef[] = [
-        { field: 'startTime', headerName: 'Time', cellRenderer: (p: any) => new Date(p.value).toLocaleTimeString(), width: 120 },
-        { field: 'patientName', headerName: 'Patient', flex: 1 },
-        { field: 'doctorName', headerName: 'Doctor', flex: 1 },
-        { 
-            field: 'status', 
+        { field: 'startTime', headerName: 'Time', cellRenderer: (p: any) => new Date(p.value).toLocaleTimeString(), width: 120, cellClass: 'column-highlight-id', filter: 'agDateColumnFilter' },
+        { field: 'patientName', headerName: 'Patient', flex: 1, cellClass: 'column-highlight-primary', filter: 'agTextColumnFilter' },
+        { field: 'doctorName', headerName: 'Doctor', flex: 1, filter: 'agTextColumnFilter' },
+        {
+            field: 'status',
             headerName: 'Status',
             cellRenderer: (p: any) => `<span class="badge rounded-pill bg-${this.getStatusColor(p.value)}">${AppointmentStatus[p.value]}</span>`,
             width: 120
         }
     ];
 
-    defaultColDef: ColDef = { sortable: true, filter: true, resizable: true };
+    defaultColDef: ColDef = {
+        sortable: true,
+        filter: true,
+        resizable: true,
+        headerClass: 'premium-header'
+    };
+    headerHeight = 52;
+    rowHeight = 48;
 
     constructor(
-        private adminService: AdminService, 
-        private fb: FormBuilder, 
-        private authService: AuthService, 
+        private adminService: AdminService,
+        private fb: FormBuilder,
+        private authService: AuthService,
         private router: Router,
         private cdr: ChangeDetectorRef,
         private ngZone: NgZone
     ) {
         this.doctorForm = this.fb.group({
-            name: ['', Validators.required],
+            name: ['', [Validators.required, Validators.pattern('^[a-zA-Z ]+$')]],
             specialization: ['', Validators.required],
             email: ['', [Validators.required, Validators.email]]
         });
 
         this.patientForm = this.fb.group({
-            name: ['', Validators.required],
+            name: ['', [Validators.required, Validators.pattern('^[a-zA-Z ]+$')]],
             email: ['', [Validators.required, Validators.email]],
-            age: ['', [Validators.required, Validators.min(0)]],
-            contactNumber: ['', Validators.required],
+            age: ['', [Validators.required, Validators.min(0), Validators.max(120)]],
+            contactNumber: ['', [Validators.required, Validators.pattern('^[0-9]{10}$')]],
             problemDescription: ['', Validators.required]
         });
     }

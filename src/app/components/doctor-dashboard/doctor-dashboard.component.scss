@@ -1,3 +1,88 @@
 .doctor-container {
     min-height: 100vh;
+    background-color: #f8f9fc;
+}
+
+.fade-in {
+    animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Medico Style Standard Table Overrides */
+.medico-table {
+    table-layout: fixed;
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    
+    thead {
+        background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+        th {
+            color: #ffffff !important;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+            padding: 1.25rem;
+            border: none !important;
+            background-color: transparent !important; /* Ensure all cells are transparent for the gradient */
+        }
+    }
+
+    tbody {
+        tr {
+            transition: all 0.2s ease;
+            &:hover {
+                background-color: rgba(78, 115, 223, 0.02) !important;
+                /* Avoid scaling as it can shift the layout */
+            }
+        }
+        
+        td {
+            padding: 1.25rem;
+            border-bottom: 1px solid #e3e6f0;
+            vertical-align: middle;
+        }
+    }
+
+    /* Column Specific Styles for data rows only */
+    td.col-time {
+        font-family: 'Courier New', Courier, monospace;
+        font-weight: 700;
+        color: #64748b;
+        background-color: #f8fafc;
+        width: 140px;
+    }
+
+    td.col-patient {
+        background-color: rgba(78, 115, 223, 0.04);
+        color: #4e73df;
+        font-weight: 600;
+    }
+
+    /* Set fixed widths for some columns */
+    .col-time { width: 140px; }
+    .col-patient { width: 220px; }
+    th.text-center, td.text-center { width: 150px; }
+}
+
+.card {
+    border-radius: 12px !important;
+    border: none !important;
+}
+
+/* Badge styling to match the Medico look */
+.badge {
+    font-weight: 600;
+    letter-spacing: 0.5px;
 }

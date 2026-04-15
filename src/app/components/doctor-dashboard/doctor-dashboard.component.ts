@@ -59,10 +59,10 @@ export class DoctorDashboardComponent implements OnInit, OnDestroy {
             notes: ''
         });
         this.showConsultModal = true;
-        
-        // Fetch patient documents
+
+
         const patientId = appt.patientId || (appt as any).PatientId || (appt as any).patientID || (appt as any).PatientID;
-        
+
         if (patientId) {
             this.doctorService.getPatientDocuments(patientId)
                 .pipe(takeUntil(this.destroy$))

@@ -34,7 +34,7 @@ export class LoginComponent {
             this.authService.login(this.loginForm.value).subscribe({
                 next: (user) => {
                     this.toastService.success(`Welcome back, ${user.userName}!`);
-                    const role = user.roles[0]; // Simple role check for direction
+                    const role = user.roles[0]; 
                     if (role === 'Admin') this.router.navigate(['/admin']);
                     else if (role === 'Doctor') this.router.navigate(['/doctor']);
                     else if (role === 'Patient') this.router.navigate(['/patient']);

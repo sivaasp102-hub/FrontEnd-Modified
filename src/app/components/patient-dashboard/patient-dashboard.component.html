@@ -11,8 +11,8 @@
     <div class="container py-5">
         <div class="row g-5">
             <!-- Profile Sidebar -->
-            <div class="col-lg-4">
-                <div class="card border-0 shadow-sm text-center pt-5 pb-3 fade-in h-100">
+            <div class="col-lg-4 profile-sidebar">
+                <div class="card border-0 shadow-sm text-center pt-5 pb-3 fade-in">
                     <div class="position-relative mx-auto mb-4" style="width: 120px; height: 120px;">
                         <div
                             class="rounded-circle bg-primary bg-opacity-10 w-100 h-100 d-flex align-items-center justify-content-center text-primary fs-1 fw-bold">
@@ -174,16 +174,24 @@
                     <form [formGroup]="profileForm" (ngSubmit)="submitProfile()">
                         <div class="row g-3">
                             <div class="col-12">
-                                <label class="form-label small fw-bold text-muted">Full Name</label>
-                                <input type="text" class="form-control" formControlName="name">
+                                <label class="form-label small fw-bold text-muted required">Full Name</label>
+                                <input type="text" class="form-control" formControlName="name"
+                                    [class.is-invalid]="profileForm.get('name')?.touched && profileForm.get('name')?.invalid">
+                                <div class="invalid-feedback" *ngIf="profileForm.get('name')?.errors?.['required']">Name is required.</div>
+                                <div class="invalid-feedback" *ngIf="profileForm.get('name')?.errors?.['pattern']">Name cannot contain numbers.</div>
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label small fw-bold text-muted">Age</label>
-                                <input type="number" class="form-control" formControlName="age">
+                                <input type="number" class="form-control" formControlName="age"
+                                    [class.is-invalid]="profileForm.get('age')?.touched && profileForm.get('age')?.invalid">
+                                <div class="invalid-feedback" *ngIf="profileForm.get('age')?.errors?.['min'] || profileForm.get('age')?.errors?.['max']">Age must be between 0 and 120.</div>
                             </div>
                             <div class="col-md-8">
-                                <label class="form-label small fw-bold text-muted">Contact Number</label>
-                                <input type="text" class="form-control" formControlName="contactNumber">
+                                <label class="form-label small fw-bold text-muted required">Contact Number</label>
+                                <input type="text" class="form-control" formControlName="contactNumber"
+                                    [class.is-invalid]="profileForm.get('contactNumber')?.touched && profileForm.get('contactNumber')?.invalid">
+                                <div class="invalid-feedback" *ngIf="profileForm.get('contactNumber')?.errors?.['required']">Contact number is required.</div>
+                                <div class="invalid-feedback" *ngIf="profileForm.get('contactNumber')?.errors?.['pattern']">Must be exactly 10 digits with no spaces.</div>
                             </div>
                             <!-- New Fields -->
                             <div class="col-md-6">
@@ -196,11 +204,15 @@
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label small fw-bold text-muted">Emergency Contact Name</label>
-                                <input type="text" class="form-control" formControlName="emergencyContactName">
+                                <input type="text" class="form-control" formControlName="emergencyContactName"
+                                    [class.is-invalid]="profileForm.get('emergencyContactName')?.touched && profileForm.get('emergencyContactName')?.invalid">
+                                <div class="invalid-feedback" *ngIf="profileForm.get('emergencyContactName')?.errors?.['pattern']">Name cannot contain numbers.</div>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label small fw-bold text-muted">Emergency Contact Phone</label>
-                                <input type="text" class="form-control" formControlName="emergencyContactPhone">
+                                <input type="text" class="form-control" formControlName="emergencyContactPhone"
+                                    [class.is-invalid]="profileForm.get('emergencyContactPhone')?.touched && profileForm.get('emergencyContactPhone')?.invalid">
+                                <div class="invalid-feedback" *ngIf="profileForm.get('emergencyContactPhone')?.errors?.['pattern']">Must be exactly 10 digits with no spaces.</div>
                             </div>
 
                             <div class="col-12">
@@ -234,11 +246,12 @@
                         <div class="row g-3">
                             <div class="col-12">
                                 <label class="form-label small fw-bold text-muted">Select Doctor</label>
-                                <select class="form-select" formControlName="doctorId">
-                                    <option [ngValue]="null">Choose a doctor...</option>
-                                    <option *ngFor="let d of doctors" [ngValue]="d.id">Dr. {{ d.name }} ({{
-                                        d.specialization }})</option>
-                                </select>
+                                <input type="text" class="form-control" [(ngModel)]="doctorSearch" [ngModelOptions]="{standalone: true}" (input)="onDoctorSearchChange()" placeholder="Search by name or specialization..." list="doctorList">
+                                <datalist id="doctorList">
+                                    <option *ngFor="let d of modalFilteredDoctors" [value]="'Dr. ' + d.name">{{ d.specialization }}</option>
+                                </datalist>
+                                <input type="hidden" formControlName="doctorId">
+                                <div *ngIf="bookForm.get('doctorId')?.touched && bookForm.get('doctorId')?.invalid" class="text-danger small mt-1">Please select a doctor from the list.</div>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label small fw-bold text-muted">Preferred Start</label>

@@ -26,14 +26,14 @@ export class RegisterComponent {
             email: ['', [Validators.required, Validators.email]],
             password: ['', [Validators.required, Validators.minLength(6)]],
             role: ['Patient', Validators.required],
-            name: ['', Validators.required],
-            age: [null],
-            contactNumber: [''],
+            name: ['', [Validators.required, Validators.pattern('^[a-zA-Z ]+$')]],
+            age: ['',[Validators.min(1),Validators.max(120)]],
+            contactNumber: ['', [Validators.required, Validators.pattern('^[0-9]{10}$')]],
             problemDescription: [''],
             allergies: [''],
             chronicDiseases: [''],
-            emergencyContactName: [''],
-            emergencyContactPhone: [''],
+            emergencyContactName: ['', [Validators.pattern('^[a-zA-Z ]+$')]],
+            emergencyContactPhone: ['', [Validators.pattern('^[0-9]{10}$')]],
             specialization: ['']
         });
 

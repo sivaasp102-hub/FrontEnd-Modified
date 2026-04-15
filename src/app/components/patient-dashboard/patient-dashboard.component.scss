@@ -2,6 +2,24 @@
     min-height: 100vh;
 }
 
+.profile-sidebar {
+    position: sticky;
+    top: 2rem; /* Offset for spacing */
+    align-self: flex-start;
+    height: fit-content;
+    max-height: calc(100vh - 4rem); /* Allow it to scroll if too high */
+    overflow-y: auto;
+    
+    /* Hide scrollbar for a cleaner look but keep functionality */
+    &::-webkit-scrollbar {
+        width: 4px;
+    }
+    &::-webkit-scrollbar-thumb {
+        background: rgba(13, 110, 253, 0.1);
+        border-radius: 10px;
+    }
+}
+
 .appointment-card {
     border-radius: 1.25rem !important;
     border: 1px solid rgba(13, 110, 253, 0.15) !important;
